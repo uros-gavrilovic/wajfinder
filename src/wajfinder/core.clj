@@ -1,7 +1,7 @@
 (ns wajfinder.core
-  (:gen-class))
+  (:gen-class)
+  (:require [wajfinder.database :as db]))
 
 (defn -main
-  "I don't do a whole lot ... yet."
   [& args]
-  (println "Hello, World!"))
+  (println (db/ping)))

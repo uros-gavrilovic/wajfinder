@@ -13,3 +13,5 @@ pom.xml.asc
 .hg/
 .clj-kondo/
 .lsp/
+.profiles.clj
+.calva/output-window/output.calva-repl
