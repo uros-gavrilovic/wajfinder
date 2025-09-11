@@ -75,6 +75,26 @@
      CREATE (a)-[:ROAD {distance: $distance}]->(b)"
    {:from from :to to :distance distance}))
 
+(defn edit-road!
+  "Updates a road between two cities."
+  [from to updates]
+  (let [sets (->> updates
+                  (map (fn [[k _]] (str "r." (name k) " = $" (name k))))
+                  (str/join ", "))]
+    (run-query
+     (str "MATCH (a:City {name: $from})-[r:ROAD]->(b:City {name: $to}) "
+          "SET " sets " "
+          "RETURN r")
+     (assoc updates :from from :to to))))
+
+(defn delete-road!
+  "Deletes a road between two cities."
+  [from to]
+  (run-query
+   "MATCH (a:City {name: $from})-[r:ROAD]->(b:City {name: $to})
+    DELETE r"
+   {:from from :to to}))
+
 (defn get-all-roads []
   (run-query "MATCH (fromCity)-[road]->(toCity) RETURN fromCity.name, toCity.name, road" {}))
 

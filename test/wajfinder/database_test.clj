@@ -32,14 +32,14 @@
 
         ;; {:results
         ;;  [{:columns ["c.name"]
-          ;;  :data [{:row ["Chernaya Polana"]}
-                  ;; {:row ["Elektro"]}]}]}
+        ;;  :data [{:row ["Chernaya Polana"]}
+        ;; {:row ["Elektro"]}]}]}
 
         (fact "edit-city! updates city attributes"
               (db/create-city! "Polana")
               (db/edit-city! "Polana" {:name "Chernaya Polana" :population 100})
-              (let [cities (db/get-all-cities)]
-                (some #(= "Chernaya Polana" (get-in % [:row 0])) (:data (first (:results cities)))) => truthy))
+              (some #(= "Chernaya Polana" (get-in % [:row 0]))
+                    (:data (first (:results (db/get-all-cities))))) => truthy)
 
         (fact "delete-city! removes a city"
               (db/create-city! "Elektrozavodsk")
