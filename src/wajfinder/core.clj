@@ -4,4 +4,10 @@
 
 (defn -main
   [& args]
-  (println (db/ping)))
+  (db/purge!)
+  (db/create-city! "Chernogorsk")
+  (db/create-city! "Berezino")
+  (db/create-road! "Chernogorsk" "Berezino" 100)
+  (println (db/count-cities)))
+
+(-main)

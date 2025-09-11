@@ -1,10 +1,10 @@
 (ns wajfinder.database
   (:require [clj-http.client :as client]
-            [cheshire.core :as json] 
+            [cheshire.core :as json]
             [clojure.string :as str]
             [environ.core :refer [env]]))
 
-(def neo4j-url "http://localhost:7474/db/neo4j/tx/commit")
+(def neo4j-url (env :neo4j-url))
 (def username (env :neo4j-username))
 (def password (env :neo4j-password))
 
@@ -29,7 +29,14 @@
       {:status :ok :message "Neo4j is reachable"}
       {:status :error :message "Neo4j ping failed"})))
 
-(defn create-city! 
+(defn purge!
+  "Purges the database."
+  []
+  (run-query "MATCH (c:City) DETACH DELETE c" {})
+  (run-query "MATCH (r:Road) DETACH DELETE r" {})
+  {:status :ok :message "Cities and roads purged"})
+
+(defn create-city!
   "Creates a city node in the database."
   [name]
   (run-query "CREATE (c:City {name: $name}) RETURN c"
@@ -49,21 +56,29 @@
 (defn delete-city!
   "Deletes a city and its connected roads."
   [name]
-  (run-query "MATCH (c:City {name: $name})-[r]-() DELETE r, c"
+  (run-query "MATCH (c:City {name: $name}) DETACH DELETE c"
              {:name name}))
 
-(defn create-road! 
+(defn get-all-cities []
+  (run-query "MATCH (c:City) RETURN c.name" {}))
+
+(defn count-cities []
+  (let [cities-result (get-all-cities)
+        rows          (get-in cities-result [:results 0 :data])]
+    (count rows)))
+
+(defn create-road!
   "Creates a road relationship between two cities."
   [from to distance]
   (run-query
-    "MATCH (a:City {name: $from}), (b:City {name: $to})
+   "MATCH (a:City {name: $from}), (b:City {name: $to})
      CREATE (a)-[:ROAD {distance: $distance}]->(b)"
-    {:from from :to to :distance distance}))
+   {:from from :to to :distance distance}))
 
-(create-city! "Chernogorsk")
-(create-city! "Berezino")
-(create-road! "Chernogorsk" "Berezino" 100)
+(defn get-all-roads []
+  (run-query "MATCH (fromCity)-[road]->(toCity) RETURN fromCity.name, toCity.name, road" {}))
 
-(defn test-query []
-  (run-query "MATCH (a)-[r]->(b) RETURN a.name, b.name, r" {}))
-(println (test-query))
+(defn count-roads []
+  (let [roads-result (get-all-roads)
+        rows        (get-in roads-result [:results 0 :data])]
+    (count rows)))

@@ -12,7 +12,9 @@
                 [clj-http "3.12.3"] ; HTTP client
                 [cheshire "5.11.0"] ; JSON parser
                 [environ "1.2.0"]] ; Environment variable handling
-  :plugins [[lein-environ "1.2.0"] [lein-midje "3.2.1"]]
+  :plugins [[lein-environ "1.2.0"] 
+            [lein-midje "3.2.1"]
+            [lein-cljfmt "0.8.2"]] ; Code formatter
   :main ^:skip-aot wajfinder.core
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all
