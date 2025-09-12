@@ -30,16 +30,11 @@
               (db/create-city! "Novodimitrovsk")
               (db/count-cities) => 1)
 
-        ;; {:results
-        ;;  [{:columns ["c.name"]
-        ;;  :data [{:row ["Chernaya Polana"]}
-        ;; {:row ["Elektro"]}]}]}
-
         (fact "edit-city! updates city attributes"
               (db/create-city! "Polana")
               (db/edit-city! "Polana" {:name "Chernaya Polana" :population 100})
-              (some #(= "Chernaya Polana" (get-in % [:row 0]))
-                    (:data (first (:results (db/get-all-cities))))) => truthy)
+              (let [cities (db/get-all-cities)]
+                (some #(= "Chernaya Polana" (:name %)) cities) => truthy))
 
         (fact "delete-city! removes a city"
               (db/create-city! "Elektrozavodsk")
@@ -56,3 +51,33 @@
               (db/delete-city! "Elektrozavodsk")
               (db/count-cities) => 1
               (db/count-roads) => 0)))
+
+(facts "about road CRUD"
+       (against-background
+        [(before :facts (db/purge!))
+         (after :facts (db/purge!))]
+
+        (fact "create-road! adds a road between two cities"
+              (db/create-city! "Novodimitrovsk")
+              (db/create-city! "Svetlojarsk")
+              (db/create-road! "Novodimitrovsk" "Svetlojarsk" 100)
+              (db/count-cities) => 2
+              (db/count-roads) => 1))
+
+       (fact "delete-road! removes a road between two cities"
+             (db/create-city! "Novodimitrovsk")
+             (db/create-city! "Svetlojarsk")
+             (db/create-road! "Novodimitrovsk" "Svetlojarsk" 100)
+             (db/count-roads) => 1
+             (db/delete-road! "Novodimitrovsk" "Svetlojarsk")
+             (db/count-roads) => 0)
+
+       (fact "edit-road! updates road attributes"
+             (db/create-city! "Novodimitrovsk")
+             (db/create-city! "Svetlojarsk")
+             (db/create-road! "Novodimitrovsk" "Svetlojarsk" 100)
+             (db/edit-road! "Novodimitrovsk" "Svetlojarsk" {:distance 150})
+             (let [road (first (db/get-all-roads))]
+               (:distance road) => 150
+               (:from road) => "Novodimitrovsk"
+               (:to road) => "Svetlojarsk")))

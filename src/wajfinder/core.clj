@@ -4,10 +4,12 @@
 
 (defn -main
   [& args]
-  (db/purge!)
-  (db/create-city! "Chernogorsk")
-  (db/create-city! "Berezino")
-  (db/create-road! "Chernogorsk" "Berezino" 100)
-  (println (db/count-cities)))
+  ;; (db/purge!)
+  ;; (db/create-city! "Chernogorsk")
+  ;; (db/create-city! "Berezino")
+  ;; (db/create-road! "Chernogorsk" "Berezino" 100)
+  ;; (println (db/get-all-cities))
+  ;; (println (db/get-all-roads))
+  (println "Starting WajFinder..."))
 
 (-main)

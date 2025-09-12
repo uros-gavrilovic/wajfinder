@@ -60,12 +60,13 @@
              {:name name}))
 
 (defn get-all-cities []
-  (run-query "MATCH (c:City) RETURN c.name" {}))
+  (let [result (run-query "MATCH (c:City) RETURN c.name AS name" {})]
+    (mapv (fn [row]
+            {:name (get-in row [:row 0])})
+          (get-in result [:results 0 :data]))))
 
 (defn count-cities []
-  (let [cities-result (get-all-cities)
-        rows          (get-in cities-result [:results 0 :data])]
-    (count rows)))
+  (count (get-all-cities)))
 
 (defn create-road!
   "Creates a road relationship between two cities."
@@ -96,9 +97,15 @@
    {:from from :to to}))
 
 (defn get-all-roads []
-  (run-query "MATCH (fromCity)-[road]->(toCity) RETURN fromCity.name, toCity.name, road" {}))
+  (let [result (run-query
+                "MATCH (fromCity)-[road:ROAD]->(toCity)
+                 RETURN fromCity.name AS from, toCity.name AS to, road.distance AS distance"
+                {})]
+    (mapv (fn [row]
+            {:from     (get-in row [:row 0])
+             :to       (get-in row [:row 1])
+             :distance (get-in row [:row 2])})
+          (get-in result [:results 0 :data]))))
 
 (defn count-roads []
-  (let [roads-result (get-all-roads)
-        rows        (get-in roads-result [:results 0 :data])]
-    (count rows)))
+  (count (get-all-roads)))
