@@ -24,9 +24,9 @@
   (db/create-road! "E" "F" 2)
   (db/create-road! "D" "F" 4)
 
-  (def djikstra-result (path/djikstra "A"))
-  (println djikstra-result)
-  (println (path/path-to djikstra-result "F"))
+  (def dijkstra-result (path/dijkstra "A"))
+  (println dijkstra-result)
+  (println (path/path-to dijkstra-result "F"))
 
   (println "Starting WajFinder..."))
 
