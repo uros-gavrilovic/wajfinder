@@ -20,11 +20,7 @@
 (defn evaluate-distance-and-path
   "Updates the adjacent node if there is a shorter path through the given source node"
   [adj-node edge-weight source-node]
-  (println "adjacent: " adj-node)
-  (println "start node:" source-node)
   (let [new-distance (+ (:distance source-node) edge-weight)]
-    (println "new distance: " new-distance)
-    (println "current distance: " (:distance adj-node))
     (if (< new-distance (:distance adj-node))
       (-> adj-node
           (assoc :distance new-distance)
@@ -80,7 +76,6 @@
   "Returns an array of nodes which represents the shortest path to the target node,
    or empty array if it's unreachable"
   [nodes target-node]
-  (println nodes)
   (let [node (get nodes target-node)]
     (if (nil? node)
       [] ; unreachable node
