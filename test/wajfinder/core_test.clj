@@ -3,5 +3,7 @@
             [wajfinder.core :as core]))
 
 (facts "Core namespace"
-       (fact "Main function should exist and be callable")
-       (core/-main) => nil)
+       (fact "Starting and stopping the server works"
+             (core/start-server!)
+             (core/stop-server!)
+             truthy))

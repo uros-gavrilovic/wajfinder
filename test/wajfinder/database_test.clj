@@ -81,3 +81,19 @@
                (:distance road) => 150
                (:from road) => "Novodimitrovsk"
                (:to road) => "Svetlojarsk")))
+
+(facts "about has-city?"
+       (against-background
+        [(before :facts (db/purge!))
+         (after :facts (db/purge!))]
+
+        (fact "fails if city does not exist"
+              (db/has-city? "Nadezdhino") => false)
+
+        (fact "returns true if city exists"
+              (db/create-city! "Markovo")
+              (db/has-city? "Markovo") => true)
+
+        (fact "returns false after the city is deleted"
+              (db/delete-city! "Pavlovo")
+              (db/has-city? "Pavlovo") => false)))

@@ -24,7 +24,6 @@
   "Pings the Neo4J to test connection."
   []
   (let [result (run-query "RETURN 1" {})]
-    (println "Pinging Neo4j database...")
     (if (get-in result [:results 0 :data 0 :row 0])
       {:status :ok :message "Neo4j is reachable"}
       {:status :error :message "Neo4j ping failed"})))
@@ -39,8 +38,8 @@
 (defn create-city!
   "Creates a city node in the database."
   [name]
-  (run-query "CREATE (c:City {name: $name}) RETURN c"
-             {:name name}))
+  (run-query "CREATE (c:City {name: $name}) RETURN c" {:name name})
+  {:name name})
 
 (defn edit-city!
   "Edits a city's name and attributes."
@@ -109,3 +108,12 @@
 
 (defn count-roads []
   (count (get-all-roads)))
+
+(defn has-city?
+  "Returns whetever there's a city with given name in the database."
+  [name]
+  (let [result (run-query
+                "MATCH (c:City {name: $name}) RETURN count(c) AS cnt"
+                {:name name})
+        count  (get-in result [:results 0 :data 0 :row 0] 0)]
+    (pos? count)))
