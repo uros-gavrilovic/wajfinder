@@ -28,3 +28,14 @@ There are absolutely no bugs whatsoever and everything works as it should be. An
 ### What might be coming up
 I could add another algorigthm that could theoretically weight different routes between cities depending on the probability of a bandit attack, road quality, resource availability.
 So if a road is difficult to traverse, it will have higher weight index, therefore it'll be likely replaced by a different, "easier" to traverse road.
+
+## How does it work?
+
+WajFinder uses Dijkstra's algorithm to determine the shortest route between two cities stored in graph database called Neo4J. First it works by loading all cities and roads into the working memory. Each city's distance is initialized to infinity (which represents that we currently don't know how far that city is) except for the starting city which is 0 because we're there.
+
+From then on, the algo works step-by-step. It picks the smallest known distance and proceeds looking at it's neighbors. It goes iterates through the cities and if it finds a shorter path to one of it's neighbors, it updates it with a shorter path. Once a city's shortest path is found, it's marked as settled, therefore we won't visit it again.
+
+This process continues on as long as there is at least one city left. Once that's all done, we'll have the shortest path to each city, starting from the source city. After that, we trivially extract the city we want to mark as the end city.
+
+To help with ease of access, project is implemented with REST API that ties all those functions together.
+
